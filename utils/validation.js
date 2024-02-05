@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const vendorRegistrationSchema = Joi.object({
-  id:Joi.string(),
+  id: Joi.string(),
   email: Joi.string().email().required(),
   name: Joi.string().required(),
   address: Joi.string().required(),

@@ -57,10 +57,41 @@ router.get("/listAllAgency", (req, res) => {
     contactNumber: numberSort,
     _id: idSort,
   };
-  Vendor.find({ isVisible: true })
+  const status = req.query.status ?? "active"
+  const searchCriteria = {
+    $and: [
+        { 'bankDetails.status': { $in: [status] } },
+        { isVisible: true } 
+    ]
+};
+  Vendor.find(searchCriteria)
     .skip(skip)
     .limit(PAGE_SIZE)
     .sort(sortCriteria)
+    .then((vendors) => {
+      res.json({ msg: "Data Listed", vendors });
+    })
+    .catch((err) => {
+      return res.status(400).json({ error: err.message });
+    });
+});
+
+router.get("/search", (req, res) => {
+  const search = req.query.search;
+
+  const searchCriteria = {
+    $and: [
+      { isVisible: true },
+      {
+        $or: [
+          { email: search },
+          { vendorName: search },
+          { contactNumber: search },
+        ],
+      },
+    ],
+  };
+  Vendor.find(searchCriteria)
     .then((vendors) => {
       res.json({ msg: "Data Listed", vendors });
     })
